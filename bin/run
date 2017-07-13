@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# vim: ft=sh
+#
+
+set -e
+[[ $TRACE ]] && set -x
+
+declare opts="$*"
+declare usage_msg="usage:
+
+  -e --> environment
+  -p --> profile
+  -h --> help
+"
+
+usage(){
+  echo "$usage_msg" 1>&2
+  exit 1
+}
+
+check_opts() {
+  while getopts ':e:p:' OPT; do
+    case $OPT in
+      e) env="$OPTARG";;
+      p) profile="$OPTARG";;
+      *) usage;;
+    esac
+  done
+
+  if [[ -z $profile ]]; then
+    echo "You need to specify the profile(s)!" 1>&2
+    show_usage=1
+  fi
+
+  if [[ -z $env ]]; then
+    echo "You need to specify the environment!" 1>&2
+    show_usage=1
+  fi
+
+  if [[ $show_usage ]]; then
+    usage
+  fi
+}
+
+main() {
+  check_opts $opts
+
+  echo "profile: $profile"
+  echo "environment: $env"
+}
+
+if [[ "$BASH_SOURCE" == "$0" ]]; then
+  main
+fi
